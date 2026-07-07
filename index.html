@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文本处理器 + 课时费计算器</title>
+    <title>课时费计算器5.0</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
         body { background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; min-height: 100vh; }
         .container { max-width: 1600px; margin: 0 auto; background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); overflow: hidden; }
         
-        /* Header - 完全还原电脑版 */
+        /* Header - 完全保留原样式 */
         header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 30px; }
         header h1 { margin: 0; font-size: 22px; font-weight: 600; display: flex; align-items: center; gap: 12px; }
         header .subtitle { margin-top: 6px; opacity: 0.85; font-size: 13px; }
@@ -18,7 +18,7 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .status-indicator.paused .status-dot { background: #f59e0b; animation: none; }
 
-        /* 全局控制栏 - 完全还原电脑版 */
+        /* 全局控制栏 - 完全保留原样式 */
         .controls { display: flex; align-items: center; gap: 12px; padding: 10px 30px; border-bottom: 1px solid #eee; flex-wrap: wrap; }
         .toggle-switch { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
         .toggle-track { width: 44px; height: 24px; background: #667eea; border-radius: 12px; position: relative; transition: background 0.3s; }
@@ -34,7 +34,64 @@
         .btn-info { background: linear-gradient(to right, #0ea5e9, #3b82f6); color: white; }
         .btn-group { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
 
-        /* 文本处理器主体 - 完全还原电脑版 */
+        /* ==================== 新增：文本处理器折叠样式 ==================== */
+        .text-processor-wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .collapse-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #374151;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .collapse-header:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        .collapse-icon {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+            color: #667eea;
+        }
+        .collapse-header.expanded .collapse-icon {
+            transform: rotate(180deg);
+        }
+        .collapsed-summary {
+            margin-left: auto;
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .text-processor-content {
+            display: none;
+            flex-direction: column;
+            gap: 16px; /* 和原main-wrapper的gap保持一致 */
+            overflow: hidden;
+        }
+        .text-processor-content.expanded {
+            display: flex;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* ==================== 折叠样式结束 ==================== */
+
+        /* 文本处理器主体 - 完全保留原样式 */
         .main-wrapper { 
             flex: 1; 
             display: flex; 
@@ -45,7 +102,7 @@
             overflow-y: auto; 
         }
 
-        /* 面板通用样式 - 完全还原电脑版 */
+        /* 面板通用样式 - 完全保留原样式 */
         .panel { display: flex; flex-direction: column; flex-shrink: 0; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
         .panel-title { font-size: 14px; font-weight: 600; color: #1f2937; display: flex; align-items: center; gap: 8px; }
@@ -55,7 +112,7 @@
         .badge.cleaned { background: #dcfce7; color: #166534; }
         .badge.danger { background: #fee2e2; color: #991b1b; }
 
-        /* 输入区 - 完全还原电脑版 */
+        /* 输入区 - 完全保留原样式 */
         .input-panel { }
         #inputText { 
             height: 80px; width: 100%; padding: 10px; border: 2px solid #e5e7eb; border-radius: 8px; 
@@ -64,7 +121,7 @@
         }
         #inputText:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
 
-        /* 表格区 - 完全还原电脑版 */
+        /* 表格区 - 完全保留原样式 */
         .table-panel { }
         .table-container { 
             height: 180px; min-height: 60px; width: 100%; resize: vertical; overflow: auto;
@@ -79,7 +136,7 @@
         td.col-result { font-weight: bold; color: #2563eb; text-align: center; }
         .empty-table { text-align: center; color: #9ca3af; padding: 30px; font-style: italic; font-size: 12px; }
 
-        /* 输出区 - 完全还原电脑版 */
+        /* 输出区 - 完全保留原样式 */
         .output-panel { }
         #outputText { 
             height: 70px; width: 100%; padding: 10px; border: 2px solid #bbf7d0; border-radius: 8px;
@@ -88,7 +145,7 @@
         }
         #outputText:focus { outline: none; border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1); }
 
-        /* 课时费计算器区域 - 完全还原电脑版布局 */
+        /* 课时费计算器区域 - 完全保留原样式 */
         .calculator-section { margin-top: 30px; padding: 0 30px 30px; border-top: 1px solid #eee; }
         .calculator-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-top: 20px; }
         .calculator-header h2 { font-size: 22px; font-weight: 700; color: #1f2937; display: flex; align-items: center; gap: 10px; }
@@ -148,7 +205,6 @@
         #childRawInput, #adultRawInput {
             font-size: 16px; /* 比原字体小，满足需求 */
             line-height: 1.5;
-            /* 禁用输入法自动修正，配合JS清理逻辑 */
             autocapitalize: off;
             autocomplete: off;
             autocorrect: off;
@@ -192,14 +248,14 @@
         .detail .item .idx { font-weight: 600; min-width: 42px; }
         .detail .item .note { font-size: 13px; color: #aaa; margin-left: auto; }
         
-        /* 原始数据输入区 - 完全还原电脑版 */
+        /* 原始数据输入区 - 完全保留原样式 */
         .raw-input-section { margin-bottom: 24px; padding: 16px; background: #f8fafc; border-radius: 12px; border: 2px dashed #cbd5e1; }
         .raw-input-section .section-title { font-size: 16px; font-weight: 600; color: #475569; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .raw-input-section .section-title i { color: #667eea; }
         .raw-input-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
         .raw-input-actions .btn { flex: 1; min-width: 140px; justify-content: center; }
         
-        /* 总计面板 - 完全还原电脑版 */
+        /* 总计面板 - 完全保留原样式 */
         .total-panel { background: #1a1a2e; border-radius: 16px; padding: 22px 32px; box-shadow: 0 4px 24px rgba(26,26,46,0.2); color: #fff; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
         .total-panel .total-left { text-align: left; }
         .total-panel .total-left h2 { font-size: 15px; color: #a0aec0; font-weight: 500; }
@@ -207,11 +263,11 @@
         .total-panel .total-right { text-align: right; font-size: 15px; color: #a0aec0; line-height: 1.9; }
         .total-panel .total-right span { color: #ffd700; font-weight: 600; }
         
-        /* Toast - 完全还原电脑版 */
+        /* Toast - 完全保留原样式 */
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1f2937; color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* ==================== 仅手机端适配（不影响电脑版） ==================== */
+        /* 手机端适配 - 仅调整折叠栏和计算器布局，不影响电脑端 */
         @media (max-width: 760px) {
             body { padding: 10px; }
             header { padding: 12px 16px; }
@@ -226,7 +282,7 @@
             .main-wrapper { padding: 12px; gap: 12px; }
             .panel-title { font-size: 13px; }
             
-            /* 手机端计算器切换为上下布局 */
+            /* 手机端计算器切换为上下布局，不影响电脑端 */
             .calc-row { flex-direction: column; gap: 16px; margin-bottom: 16px; }
             .calculator-header { flex-direction: column; gap: 10px; align-items: flex-start; }
             .calculator-header h2 { font-size: 16px; }
@@ -236,7 +292,6 @@
             .calc-panel .subtitle { font-size: 12px; }
             
             .calc-textarea { padding: 10px; font-size: 14px; }
-            /* 手机端原始数据输入框字体更小 */
             #childRawInput, #adultRawInput { font-size: 13px; height: 100px; }
             
             .quick-fill button { font-size: 11px; padding: 3px 8px; }
@@ -253,6 +308,9 @@
             .detail { font-size: 12px; max-height: 200px; }
             table { font-size: 11px; }
             th, td { padding: 6px 4px; }
+
+            .collapse-header { padding: 10px 12px; font-size: 13px; }
+            .collapsed-summary { font-size: 10px; padding: 2px 8px; }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -261,12 +319,8 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-wand-magic-sparkles"></i> 文本处理器 + 课时费计算器</h1>
-            <div class="subtitle">电脑版布局不变 | 手机端自动适配 | 输入自动清理</div>
-            <div class="status-indicator" id="statusIndicator">
-                <div class="status-dot"></div>
-                <span>实时监听中</span>
-            </div>
+            <h1><i class="fas fa-wand-magic-sparkles"></i>课时费计算器</h1>
+            <div class="subtitle">文本处理器默认折叠 | 电脑端布局不变 | 手机端自动适配</div>
         </header>
         
         <div class="controls">
@@ -280,68 +334,83 @@
             </div>
         </div>
 
-        <div class="main-wrapper">
-            <!-- 文本处理器输入区 -->
-            <div class="panel input-panel">
-                <div class="panel-header">
-                    <div class="panel-title"><i class="fas fa-keyboard"></i> 输入源数据</div>
-                    <div style="display: flex; gap: 6px; align-items: center;">
-                        <span class="badge cleaned" id="cleanStatus">已清洗</span>
-                        <span class="badge" id="inputLines">0 行</span>
-                        <button class="btn btn-sm btn-danger" id="inputClearBtn"><i class="fas fa-trash-alt"></i> 清空</button>
+        <!-- ==================== 文本处理器区域（默认折叠） ==================== -->
+        <div class="text-processor-wrapper">
+            <!-- 折叠控制栏 -->
+            <div class="collapse-header" id="textProcessorCollapseHeader">
+                <i class="fas fa-chevron-down collapse-icon"></i>
+                <span><i class="fas fa-keyboard"></i> 文本处理器</span>
+                <span class="badge info">点击展开/收起</span>
+                <span class="collapsed-summary" id="collapsedSummary">0行 | 0个数字</span>
+            </div>
+            
+            <!-- 文本处理器内容（默认隐藏） -->
+            <div class="text-processor-content" id="textProcessorContent">
+                <div class="main-wrapper">
+                    <!-- 文本处理器输入区 -->
+                    <div class="panel input-panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fas fa-keyboard"></i> 输入源数据</div>
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                <span class="badge cleaned" id="cleanStatus">已清洗</span>
+                                <span class="badge" id="inputLines">0 行</span>
+                                <button class="btn btn-sm btn-danger" id="inputClearBtn"><i class="fas fa-trash-alt"></i> 清空</button>
+                            </div>
+                        </div>
+                        <textarea id="inputText" placeholder="粘贴数据（自动清理首尾空格/换行）"></textarea>
+                    </div>
+
+                    <!-- 表格预览区 -->
+                    <div class="panel table-panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fas fa-table"></i> 数据预览</div>
+                            <span class="badge warning">拉伸表格时输出框自动下移</span>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>课程</th>
+                                        <th>班级</th>
+                                        <th>地点</th>
+                                        <th class="col-multiplier">课时</th>
+                                        <th>老师</th>
+                                        <th class="col-target">上课人数</th>
+                                        <th class="col-result">输出预览</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 文本处理器输出区 -->
+                    <div class="panel output-panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><i class="fas fa-file-export"></i> 输出结果 (逗号分隔)</div>
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                <span class="badge highlight" id="outputCount">0 个数字</span>
+                                <button class="btn btn-sm btn-success" id="outputCopyBtn"><i class="far fa-copy"></i> 复制</button>
+                            </div>
+                        </div>
+                        <textarea id="outputText" readonly placeholder="结果实时生成..."></textarea>
                     </div>
                 </div>
-                <textarea id="inputText" placeholder="粘贴数据（自动清理首尾空格/换行）"></textarea>
-            </div>
-
-            <!-- 表格预览区 -->
-            <div class="panel table-panel">
-                <div class="panel-header">
-                    <div class="panel-title"><i class="fas fa-table"></i> 数据预览</div>
-                    <span class="badge warning">拉伸表格时输出框自动下移</span>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>课程</th>
-                                <th>班级</th>
-                                <th>地点</th>
-                                <th class="col-multiplier">倍率</th>
-                                <th>备注</th>
-                                <th class="col-target">目标值</th>
-                                <th class="col-result">输出预览</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 文本处理器输出区 -->
-            <div class="panel output-panel">
-                <div class="panel-header">
-                    <div class="panel-title"><i class="fas fa-file-export"></i> 输出结果 (逗号分隔)</div>
-                    <div style="display: flex; gap: 6px; align-items: center;">
-                        <span class="badge highlight" id="outputCount">0 个数字</span>
-                        <button class="btn btn-sm btn-success" id="outputCopyBtn"><i class="far fa-copy"></i> 复制</button>
-                    </div>
-                </div>
-                <textarea id="outputText" readonly placeholder="结果实时生成..."></textarea>
             </div>
         </div>
+        <!-- ==================== 文本处理器区域结束 ==================== -->
         
         <!-- 课时费计算器 -->
         <div class="calculator-section">
-            <div class="calculator-header">
-                <h2><i class="fas fa-calculator"></i> 课时费计算器</h2>
-                <div class="btn-group">
-                    <button class="btn btn-primary" id="transferToCalculatorBtn">
-                        <i class="fas fa-arrow-down"></i> 将输出结果导入计算器
-                    </button>
-                </div>
-            </div>
+            <!-- <div class="calculator-header"> -->
+                <!-- <h2><i class="fas fa-calculator"></i> 课时费计算器</h2> -->
+                <!-- <div class="btn-group"> -->
+                    <!-- <button class="btn btn-primary" id="transferToCalculatorBtn"> -->
+                        <!-- <i class="fas fa-arrow-down"></i> 将输出结果导入计算器 -->
+                    <!-- </button> -->
+                <!-- </div> -->
+            <!-- </div> -->
             
             <div class="calc-row">
                 <!-- 少儿课程面板（电脑端居左，完全保留原有样式） -->
@@ -476,6 +545,7 @@
         const realtimeToggle = document.getElementById('realtimeToggle');
         const statusIndicator = document.getElementById('statusIndicator');
         const toast = document.getElementById('toast');
+        const collapsedSummary = document.getElementById('collapsedSummary'); // 折叠态概要
         
         let isRealtime = true;
         let debounceTimer;
@@ -572,6 +642,8 @@
             outputText.value = results.join(',');
             outputCount.textContent = `${results.length} 个数字`;
             inputLines.textContent = `${validLineCount} 行`;
+            // 更新折叠态概要信息
+            collapsedSummary.textContent = `${validLineCount}行 | ${results.length}个数字`;
             renderTable(tableData);
         }
 
@@ -700,7 +772,14 @@
         function clearChildRawData() { document.getElementById('childRawInput').value = ''; showToast('🗑️ 少儿原始数据已清空'); }
         function clearAdultRawData() { document.getElementById('adultRawInput').value = ''; showToast('🗑️ 成人原始数据已清空'); }
 
-        // 事件绑定
+        // ============ 折叠功能逻辑 ============
+        document.getElementById('textProcessorCollapseHeader').addEventListener('click', function() {
+            const content = document.getElementById('textProcessorContent');
+            content.classList.toggle('expanded');
+            this.classList.toggle('expanded');
+        });
+
+        // ============ 事件绑定 ============
         document.getElementById('inputClearBtn').addEventListener('click', clearInput);
         document.getElementById('outputCopyBtn').addEventListener('click', copyOutput);
         document.getElementById('globalClearBtn').addEventListener('click', clearInput);
